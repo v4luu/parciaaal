@@ -1,5 +1,6 @@
 env/ 
 *pyc* 
+bin/
 */env/
 */.pytest_cache/
 */__pycache__/
