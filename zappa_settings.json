@@ -24,5 +24,36 @@
             
           } 
         ]
+    },
+    
+    
+    "dev2": {
+        "app_function": "transformacion.lambda_handler",
+        "aws_region": "us-east-1",
+        "exclude": [
+            "boto3",
+            "dateutil",
+            "botocore",
+            "s3transfer",
+            "concurrent"
+        ],
+        "profile_name": "default",
+        "project_name": "paso2",
+        "runtime": "python3.10",
+        "s3_bucket": "zappa-zoa6q2awf",
+        "keep_warm": false,
+        "apigateway_enabled": false,
+        "manage_roles": false,
+        "role_name": "LabRole",
+        "events": [
+        {
+            "function": "transformacion.lambda_handler",
+            "event_source": {
+              "arn":  "arn:aws:s3:::paginaspruebas",
+              "events": [
+                "s3:ObjectCreated:*"
+              ]
+           }
+        }]
     }
 }
