@@ -1,10 +1,9 @@
-import json
-import pytest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 
 # Importar la función lambda_handler de tu código
 from proyecto import lambda_handler  # Ajusta esto al nombre de tu archivo
+
 
 # Prueba 1: Verificar la llamada a la URL y subida a S3 (Simulada)
 @patch("boto3.client")
@@ -21,13 +20,13 @@ def test_lambda_handler(mock_urlopen, mock_boto_client):
 
     event, context = {}, {}
     response = lambda_handler(event, context)
-    
+
     assert response["statusCode"] == 200, "La función lambda no retornó un código 200."
-    
-    print(f"Cantidad de llamadas a urlopen: {mock_urlopen.call_count}")  # Depuración
+
     assert mock_urlopen.call_count == 10, (
         f"Se esperaban 10 llamadas, pero se hicieron {mock_urlopen.call_count}"
     )
+
 
 # Prueba 2: Verificar si la función maneja los errores correctamente
 @patch("boto3.client")
@@ -41,9 +40,10 @@ def test_lambda_handler_error(mock_urlopen, mock_boto_client):
 
     event, context = {}, {}
     response = lambda_handler(event, context)
-    
+
     assert response["statusCode"] == 500, "No se manejó correctamente el error de red."
     assert "Error de red" in response["body"], "El mensaje de error no es el esperado."
+
 
 # Prueba 3: Verificar la existencia de la fecha de descarga en el archivo
 def test_check_date_in_filename():
