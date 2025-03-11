@@ -3,7 +3,6 @@ import urllib.request
 import boto3
 from datetime import datetime
 
-
 def lambda_handler(event, context):
     """Función principal de Lambda para descargar páginas y guardarlas en S3."""
     headers = {
@@ -13,8 +12,7 @@ def lambda_handler(event, context):
         ),
         "Accept-Language": "en-US,en;q=0.9",
         "Accept": (
-            "text/html,application/xhtml+xml,application/xml;q=0.9,"
-            "image/webp,*/*;q=0.8"
+            "text/html,application/xhtml+xml,application/xml;q=0.9," "image/webp,*/*;q=0.8"
         ),
         "Connection": "keep-alive",
     }
@@ -28,10 +26,11 @@ def lambda_handler(event, context):
     s3_client = boto3.client("s3")
     today = datetime.utcnow().strftime("%Y-%m-%d")
 
-    for page in range(1, 11):  # Descargar 10 páginas
-        url = base_url.format(page)
-        print(f"Descargando: {url}")
-        try:
+    try:
+        for page in range(1, 11):  # Descargar 10 páginas
+            url = base_url.format(page)
+            print(f"Descargando: {url}")
+            
             req = urllib.request.Request(url, headers=headers)
             req.add_header("Cookie", f"captcha_token={cookies['captcha_token']}")
 
@@ -47,7 +46,8 @@ def lambda_handler(event, context):
                     ContentType="text/html",
                 )
                 print(f"Guardado en S3: s3://{s3_bucket}/{s3_key}")
-        except Exception as e:
-            print(f"Error al procesar la página {page}: {e}")
+    except Exception as e:
+        print(f"Error al procesar la página {page}: {e}")
+        return {"statusCode": 500, "body": json.dumps(f"Error: {str(e)}")}
 
     return {"statusCode": 200, "body": json.dumps("Descarga y almacenamiento completados.")}
