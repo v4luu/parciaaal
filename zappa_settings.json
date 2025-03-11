@@ -19,7 +19,7 @@
         "events": [ 
           { 
             "function": "proyecto.lambda_handler", 
-            "expression": "cron(5 3 * * ? *)"
+            "expression": "cron(50 14 * * ? *)"
             
           } 
         ]
