@@ -5,13 +5,17 @@ import io
 from bs4 import BeautifulSoup
 from datetime import datetime
 
+
 def lambda_handler(event, context):
     """Maneja el evento de S3 y extrae datos de propiedades desde archivos HTML."""
     print("Evento recibido:", json.dumps(event, indent=2))  # Depuración
 
     if "Records" not in event or not event["Records"]:
         print("El evento no contiene 'Records'.")
-        return {"statusCode": 400, "body": "Evento incorrecto. Se esperaba una notificación de S3."}
+        return {
+            "statusCode": 400,
+            "body": "Evento incorrecto. Se esperaba una notificación de S3.",
+        }
 
     s3_client = boto3.client("s3")
     bucket_origen = event["Records"][0]["s3"]["bucket"]["name"]
@@ -21,9 +25,9 @@ def lambda_handler(event, context):
     try:
         csv_buffer = io.StringIO()
         csv_writer = csv.writer(csv_buffer)
-        csv_writer.writerow([
-            "FechaDescarga", "Barrio", "Valor", "NumHabitaciones", "NumBanos", "mts2"
-        ])
+        csv_writer.writerow(
+            ["FechaDescarga", "Barrio", "Valor", "NumHabitaciones", "NumBanos", "mts2"]
+        )
 
         page_number = 1
         while True:
@@ -31,7 +35,7 @@ def lambda_handler(event, context):
             print(f"Procesando archivo: {archivo_html}")
             try:
                 response = s3_client.get_object(Bucket=bucket_origen, Key=archivo_html)
-                html_content = response['Body'].read().decode("utf-8")
+                html_content = response["Body"].read().decode("utf-8")
                 soup = BeautifulSoup(html_content, "html.parser")
                 propiedades = soup.find_all("div", class_="listing-card__content")
 
@@ -48,14 +52,18 @@ def lambda_handler(event, context):
                         num_banos = casa.find("p", {"data-test": "bathrooms"})
                         mts2 = casa.find("p", {"data-test": "floor-area"})
 
-                        csv_writer.writerow([
-                            fecha_descarga,
-                            barrio.text.strip() if barrio else "N/A",
-                            valor.text.strip() if valor else "N/A",
-                            num_habitaciones.text.strip() if num_habitaciones else "N/A",
-                            num_banos.text.strip() if num_banos else "N/A",
-                            mts2.text.strip() if mts2 else "N/A",
-                        ])
+                        csv_writer.writerow(
+                            [
+                                fecha_descarga,
+                                barrio.text.strip() if barrio else "N/A",
+                                valor.text.strip() if valor else "N/A",
+                                num_habitaciones.text.strip()
+                                if num_habitaciones
+                                else "N/A",
+                                num_banos.text.strip() if num_banos else "N/A",
+                                mts2.text.strip() if mts2 else "N/A",
+                            ]
+                        )
                     except Exception as e:
                         print(f"Error al extraer datos de una propiedad: {str(e)}")
                         continue
@@ -72,10 +80,13 @@ def lambda_handler(event, context):
                 Bucket=target_bucket,
                 Key=csv_key,
                 Body=csv_buffer.getvalue(),
-                ContentType="text/csv"
+                ContentType="text/csv",
             )
             print(f"Archivo guardado en s3://{target_bucket}/{csv_key}")
-            return {"statusCode": 200, "body": json.dumps(f"Datos guardados en {target_bucket}/{csv_key}")}
+            return {
+                "statusCode": 200,
+                "body": json.dumps(f"Datos guardados en {target_bucket}/{csv_key}"),
+            }
 
         print("No se extrajeron datos de propiedades.")
         return {"statusCode": 200, "body": json.dumps("No se extrajeron datos.")}

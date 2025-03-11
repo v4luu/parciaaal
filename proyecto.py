@@ -3,6 +3,7 @@ import urllib.request
 import boto3
 from datetime import datetime
 
+
 def lambda_handler(event, context):
     """Función principal de Lambda para descargar páginas y guardarlas en S3."""
     headers = {
@@ -12,7 +13,7 @@ def lambda_handler(event, context):
         ),
         "Accept-Language": "en-US,en;q=0.9",
         "Accept": (
-            "text/html,application/xhtml+xml,application/xml;q=0.9," 
+            "text/html,application/xhtml+xml,application/xml;q=0.9,"
             "image/webp,*/*;q=0.8"
         ),
         "Connection": "keep-alive",
@@ -33,12 +34,12 @@ def lambda_handler(event, context):
         try:
             req = urllib.request.Request(url, headers=headers)
             req.add_header("Cookie", f"captcha_token={cookies['captcha_token']}")
-            
+
             with urllib.request.urlopen(req) as response:
                 html_content = response.read().decode("utf-8")
                 file_name = f"{today}/page_{page}.html"
                 s3_key = file_name
-                
+
                 s3_client.put_object(
                     Bucket=s3_bucket,
                     Key=s3_key,
