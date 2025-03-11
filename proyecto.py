@@ -13,7 +13,8 @@ def lambda_handler(event, context):
         ),
         "Accept-Language": "en-US,en;q=0.9",
         "Accept": (
-            "text/html,application/xhtml+xml,application/xml;q=0.9," "image/webp,*/*;q=0.8"
+            "text/html,application/xhtml+xml,application/xml;q=0.9,"
+            "image/webp,*/*;q=0.8"
         ),
         "Connection": "keep-alive",
     }
@@ -31,7 +32,7 @@ def lambda_handler(event, context):
         for page in range(1, 11):  # Descargar 10 páginas
             url = base_url.format(page)
             print(f"Descargando: {url}")
-            
+
             req = urllib.request.Request(url, headers=headers)
             req.add_header("Cookie", f"captcha_token={cookies['captcha_token']}")
 
@@ -47,6 +48,7 @@ def lambda_handler(event, context):
                     ContentType="text/html",
                 )
                 print(f"Guardado en S3: s3://{s3_bucket}/{s3_key}")
+
     except Exception as e:
         print(f"Error al procesar la página {page}: {e}")
         return {"statusCode": 500, "body": json.dumps(f"Error: {str(e)}")}
