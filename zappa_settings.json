@@ -9,7 +9,6 @@
             "s3transfer",
             "concurrent"
         ],
-        "profile_name": "default",
         "project_name": "environment",
         "runtime": "python3.10",
         "s3_bucket": "zappa-zoa6q2awf",
@@ -37,7 +36,6 @@
             "s3transfer",
             "concurrent"
         ],
-        "profile_name": "default",
         "project_name": "paso2",
         "runtime": "python3.10",
         "s3_bucket": "zappa-zoa6q2awf",
